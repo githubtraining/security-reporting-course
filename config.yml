@@ -1,0 +1,16 @@
+title: security-reporting
+description: Set up a security reporting process
+template:
+  repo: security-reporting-template
+  name: security-reporting
+before:
+  - type: createIssue
+    title: Welcome!
+    body: new-issue.md
+steps:
+  - title: First step
+    description: The first step in your course
+    event: issues.assigned
+    link: '{{ repoUrl }}'
+    actions:
+      - type: closeIssue
