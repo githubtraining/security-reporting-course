@@ -62,6 +62,8 @@ steps:
         store:
           securityPrUrl: '{{ payload.pull_request.html_url }}'
           securityPrTitle: '{{ payload.pull_request.title }}'
+      - type: closeIssue
+        issue: '{{ store. policyIssueNumber }}'
 
   # Step 7
 
