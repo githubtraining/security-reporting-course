@@ -27,18 +27,18 @@ steps:
     event: pull_request.opened
     link: '{{ store.policyIssueUrl }}'
     actions:
-      - type: findInTree
-        path: SECURITY.md
+      - type: getFileContents
+        filename: SECURITY.md
         required: false
         action_id: root
 
-      - type: findInTree
-        path: docs/SECURITY.md
+      - type: getFileContents
+        filename: docs/SECURITY.md
         required: false
         action_id: inDocs
 
-      - type: findInTree
-        path: .github/SECURITY.md
+      - type: getFileContents
+        filename: .github/SECURITY.md
         required: false
         action_id: inGitHub
 
