@@ -1,16 +1,87 @@
-title: security-reporting
+title: Set up a security reporting
 description: Set up a security reporting process
 template:
   repo: security-reporting-template
   name: security-reporting
 before:
+  - type: updateBranchProtection
+
   - type: createIssue
-    title: Welcome!
-    body: new-issue.md
+    title: Add a Security Policy
+    body: 05_add-security-policy.md #security policy issue body (add branch name instructions and examples)
+    store:
+      policyIssueUrl: '{{ result.data.html_url }}'
+      policyIssueNumber: '{{ result.data.number }}'
+      # securityIssue
+
+
 steps:
-  - title: First step
-    description: The first step in your course
-    event: issues.assigned
-    link: '{{ repoUrl }}'
+
+  # Step 6
+  # Learner adds a security polcy through the security tab thereby creating a new PR
+  # Bot approves the PR
+  # Bot prompts user to merge when ready
+
+  - title: Add a SECURITY.md file
+    description: Add a SECURITY.md file to your repository.
+    event: pull_request.opened
+    link: '{{ store.policyIssueUrl }}'
     actions:
-      - type: closeIssue
+      - type: findInTree
+        path: SECURITY.md
+        required: false
+        action_id: root
+
+      - type: findInTree
+        path: docs/SECURITY.md
+        required: false
+        action_id: inDocs
+
+      - type: findInTree
+        path: .github/SECURITY.md
+        required: false
+        action_id: inGitHub
+
+      - type: gate
+        gates:
+        - left: '{{ actions.root }}'
+        - left: '{{ actions.inDocs }}'
+        - left: '{{ actions.inGitHub }}'
+        else: 
+        - type: respond
+          with: e-debug.md
+          data:
+            root: '{{ actions.root }}'
+            inDocs: '{{ actions.inDocs }}'
+            inGitHub: '{{ actions.inGitHub }}'
+      - type: createReview
+        event: APPROVE
+        body: 06_suggest-merge.md #error response that PR was closed not merged. Reopen PR
+        store:
+          securityPrUrl: '{{ payload.pull_request.html_url }}'
+          securityPrTitle: '{{ payload.pull_reuqest.titel }}'
+
+  # Step 7
+
+  - title: Merge the SECURITY.md pull request
+    description: Merge the pull request.
+    event: pull_request.closed
+    link: "{{ store.securityPrUrl }}"
+    actions:
+      - type: gate
+        every: true
+        gates:
+        - left: "{{ payload.pull_request.merged }}"
+        - left: '{{ payload.pull_request.title }}'
+          operator: ===
+          right: '{{ store.securityPrTitle }}'
+        else:
+          - type: respond
+            with: 06_accidental-close.md
+      - type: respond
+        with: 06_good-merge.md
+
+
+tags: [
+  "Security", "Dependency management", "Rebasing", "Auditing", "Dependabot"
+]
