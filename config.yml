@@ -59,7 +59,7 @@ steps:
         body: 06_suggest-merge.md #error response that PR was closed not merged. Reopen PR
         store:
           securityPrUrl: '{{ payload.pull_request.html_url }}'
-          securityPrTitle: '{{ payload.pull_reuqest.titel }}'
+          securityPrTitle: '{{ payload.pull_request.title }}'
 
   # Step 7
 
