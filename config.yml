@@ -24,7 +24,9 @@ steps:
 
   - title: Add a SECURITY.md file
     description: Add a SECURITY.md file to your repository.
-    event: pull_request.opened
+    event: 
+      - pull_request.opened
+      - pull_request.synchronize
     link: '{{ store.policyIssueUrl }}'
     actions:
       - type: getFileContents
